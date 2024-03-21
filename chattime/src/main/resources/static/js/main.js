@@ -33,6 +33,8 @@ document.getElementById('login').onclick = function(event) {
     signupPage.classList.add('hidden')
     stompClient.disconnect();
     userInput.value='';
+    usernameForm.value='';
+    signupForm.value='';
     event.preventDefault();
     console.log("button clicked");
     
@@ -52,6 +54,17 @@ document.getElementById('login').onclick = function(event) {
 //     chatPage.classList.add('hidden');
 //     usernamePage.classList.remove('hidden');
 // }
+function validate(username, password){
+    //if exists
+    const checkUsername = localStorage.getItem(username);
+    const checkPassword = localStorage.getItem(password);
+    if (checkUsername == null){
+        return false;
+    }
+    if(checkPassword && password !== null){
+        return true;
+    }
+}
 
 function connect(event){
     event.preventDefault();
@@ -61,13 +74,24 @@ function connect(event){
         loginUserLength = document.getElementById('user').value.trim().length;
         signupUser = document.getElementById('username').value.trim();
         signupUserLength = document.getElementById('username').value.trim().length;
+        password = document.getElementById('password').value.trim();
+        newPassword = document.getElementById('new-password').value.trim();
         if (loginUserLength > 0){
             username = loginUser;
-        }else{
+        }
+        // else if(loginUserLength <= 0 || signupUser <= 0){
+        //     alert("invalid/missing information");
+        // }
+
+        else if(signupUserLength > 0){
             username = signupUser;
+            localStorage.setItem('username', username);
+            localStorage.setItem('password', newPassword);
         }
         console.log(username);
-        if(username){
+        validate(username,password);
+
+        if(validate){
             console.log("username got");
             signupPage.classList.add('hidden');
             usernamePage.classList.add('hidden');
@@ -83,7 +107,12 @@ function connect(event){
             //   console.error("Connection error:", error);
             //   // Handle the connection error appropriately
             // });
-        }else{
+        }else if(validate == false){
+            disconnect();
+        }
+        
+        else{
+            alert("invalid/missing information");
             console.log(username);
             console.error("username not found");
         }
